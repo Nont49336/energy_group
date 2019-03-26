@@ -7,11 +7,13 @@ from keras.preprocessing.image import img_to_array
 from keras import models
 from keras import layers
 from keras import optimizers
+from keras.models import load_model
 from keras.preprocessing.image import load_img
 
-image_size = 244
+image_size1 = 480
+image_size2 = 640
 #Load the VGG model
-vgg_conv = VGG16(weights='imagenet', include_top=False, input_shape=(image_size, image_size, 3))
+vgg_conv = VGG16(weights='imagenet', include_top=False, input_shape=(image_size1, image_size2, 3))
 
 # Freeze the layers except the last 4 layers
 for layer in vgg_conv.layers[:-4]:
@@ -57,13 +59,13 @@ print(train_dir)
 
 train_generator = train_datagen.flow_from_directory(
     train_dir,
-    target_size=(image_size, image_size),
+    target_size=(image_size1, image_size2),
     batch_size=train_batchsize,
     class_mode='categorical')
 
 validation_generator = validation_datagen.flow_from_directory(
     validation_dir,
-    target_size=(image_size, image_size),
+    target_size=(image_size1, image_size2),
     batch_size=val_batchsize,
     class_mode='categorical',
     shuffle=False)
@@ -108,7 +110,7 @@ plt.show()
 # Create a generator for prediction
 validation_generator = validation_datagen.flow_from_directory(
     validation_dir,
-    target_size=(image_size, image_size),
+    target_size=(image_size1, image_size2),
     batch_size=val_batchsize,
     class_mode='categorical',
     shuffle=False)
@@ -153,9 +155,11 @@ for i in range(len(errors)):
 
 
 
-image = load_img('images/test/1.jpg', target_size=(244, 244))
+image = load_img('images/test/5.jpg', target_size=(480, 640))
 image = img_to_array(image)
 image = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
 image = preprocess_input(image)
-
 pred = model.predict(image)
+print(pred)
+
+model.save('noonnightmodel.h5')
